@@ -468,7 +468,10 @@ export default function BlogEditorForm({ initialData, isEdit = false }: BlogEdit
         });
         const data = await res.json();
         if (data.success && data.url) {
-          insertImageHtml(`/${data.url}`, contentImgAlt);
+          const finalUrl = data.url.startsWith('http://') || data.url.startsWith('https://') || data.url.startsWith('/')
+            ? data.url
+            : `/${data.url}`;
+          insertImageHtml(finalUrl, contentImgAlt);
         } else {
           alert(data.error || 'Failed to upload image. Please check file format or try an Image URL.');
         }
@@ -963,7 +966,7 @@ export default function BlogEditorForm({ initialData, isEdit = false }: BlogEdit
             {imagePath ? (
               <div className="relative w-full h-44 rounded-2xl overflow-hidden shadow-inner bg-gray-100 group">
                 <Image
-                  src={imagePath.startsWith('/') ? imagePath : `/${imagePath}`}
+                  src={imagePath.startsWith('http://') || imagePath.startsWith('https://') ? imagePath : (imagePath.startsWith('/') ? imagePath : `/${imagePath}`)}
                   alt="Featured Preview"
                   fill
                   className="object-cover"
