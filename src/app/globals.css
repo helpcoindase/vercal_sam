@@ -1,0 +1,374 @@
+@import "tailwindcss";
+
+/* ─── CSS Variables ─── */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #304A10;
+  --secondary: #384D1F;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #ffffff;
+    --foreground: #171717;
+  }
+}
+
+input, textarea, select {
+  color: #111827;
+}
+
+/* ─── Theme ─── */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-mulish: 'Mulish', sans-serif;
+}
+
+@theme {
+  --breakpoint-xsm: 30rem;
+  --breakpoint-mlg: 62rem;
+  --breakpoint-xxl: 1500px;
+}
+
+/* ─── Base ─── */
+html {
+  scroll-behavior: smooth;
+  top: 0 !important;
+  position: static !important;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-mulish);
+  top: 0 !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: source, serif;
+}
+
+::selection {
+  background: #304A10;
+  color: #fff;
+}
+
+/* ─── Scrollbar ─── */
+.noscrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.noscrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Header ─── */
+.header.header.sticky {
+  background-color: #fff;
+}
+
+/* ─── Utilities ─── */
+.border-gn-700 {
+  color: var(--primary);
+}
+
+.book-app-doc {
+  display: block;
+  width: fit-content;
+  margin-top: 15px;
+}
+
+/* ─── Swiper ─── */
+.next-nav.swiper-button-disabled {
+  @apply opacity-80 pointer-events-none;
+}
+
+.prev-nav.swiper-button-disabled {
+  @apply opacity-80 pointer-events-none;
+}
+
+.treatments-swiper .swiper-pagination {
+  position: absolute;
+}
+
+/* ─── Google Translate ─── */
+.goog-te-gadget {
+  font-size: 0px !important;
+}
+
+.goog-te-gadget span {
+  display: none !important;
+}
+
+.goog-logo-link {
+  display: none !important;
+}
+
+.goog-te-gadget .goog-te-combo {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+.skiptranslate iframe,
+iframe.skiptranslate {
+  display: none !important;
+}
+
+div.skiptranslate {
+  display: none !important;
+}
+
+/* ─── Blog Editor Content Canvas ─── */
+.blog-editor-canvas h1 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  margin: 1rem 0 0.5rem;
+  color: #111827;
+}
+.blog-editor-canvas h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 1rem 0 0.5rem;
+  color: #111827;
+}
+.blog-editor-canvas h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.4rem;
+  color: #111827;
+}
+.blog-editor-canvas p {
+  margin: 0.5rem 0;
+  color: #1f2937;
+  line-height: 1.7;
+}
+.blog-editor-canvas ul {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+  color: #1f2937;
+}
+.blog-editor-canvas ol {
+  list-style-type: decimal;
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+  color: #1f2937;
+}
+.blog-editor-canvas blockquote {
+  border-left: 4px solid var(--primary);
+  padding-left: 1rem;
+  font-style: italic;
+  margin: 1rem 0;
+  color: #374151;
+}
+.blog-editor-canvas table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+.blog-editor-canvas th {
+  border: 1px solid #d1d5db;
+  padding: 0.5rem;
+  background-color: #f3f4f6;
+  font-weight: 700;
+  text-align: left;
+  color: #111827;
+}
+.blog-editor-canvas td {
+  border: 1px solid #d1d5db;
+  padding: 0.5rem;
+  color: #1f2937;
+}
+
+/* ─── Frontend Blog Article Content Styling ─── */
+.blog-article-content {
+  color: #2c3328;
+  font-size: 1.0625rem;
+  line-height: 1.85;
+}
+
+.blog-article-content h1 {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--secondary, #384D1F);
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.blog-article-content h2 {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--secondary, #384D1F);
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #eef2ed;
+  padding-bottom: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .blog-article-content h2 {
+    font-size: 2rem;
+  }
+}
+
+.blog-article-content h3 {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #304A10;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.blog-article-content h4 {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.blog-article-content p {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  color: #374151;
+  line-height: 1.85;
+}
+
+.blog-article-content ul {
+  list-style-type: disc !important;
+  padding-left: 2rem !important;
+  margin-top: 1.25rem !important;
+  margin-bottom: 1.25rem !important;
+}
+
+.blog-article-content ol {
+  list-style-type: decimal !important;
+  padding-left: 2rem !important;
+  margin-top: 1.25rem !important;
+  margin-bottom: 1.25rem !important;
+}
+
+.blog-article-content li {
+  margin-bottom: 0.5rem;
+  color: #374151;
+  line-height: 1.75;
+  padding-left: 0.25rem;
+}
+
+.blog-article-content li::marker {
+  color: #304A10;
+  font-weight: bold;
+}
+
+.blog-article-content strong,
+.blog-article-content b {
+  font-weight: 700;
+  color: #111827;
+}
+
+.blog-article-content em,
+.blog-article-content i {
+  font-style: italic;
+}
+
+.blog-article-content u {
+  text-decoration: underline;
+}
+
+.blog-article-content hr {
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+  margin: 2.5rem 0;
+}
+
+.blog-article-content ul ul,
+.blog-article-content ol ul {
+  list-style-type: circle !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.blog-article-content blockquote {
+  border-left: 4px solid #304A10;
+  background-color: #f6f9f6;
+  padding: 1rem 1.5rem;
+  margin: 1.75rem 0;
+  border-radius: 0 0.75rem 0.75rem 0;
+  font-style: italic;
+  color: #27371d;
+}
+
+.blog-article-content blockquote p {
+  margin: 0.5rem 0;
+}
+
+.blog-article-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  font-size: 0.95rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.blog-article-content th {
+  border: 1px solid #d1d5db;
+  padding: 0.75rem 1rem;
+  background-color: #edf5ee;
+  color: #1c2c0a;
+  font-weight: 700;
+  text-align: left;
+}
+
+.blog-article-content td {
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+  color: #374151;
+}
+
+.blog-article-content tr:nth-child(even) td {
+  background-color: #f9fbf9;
+}
+
+.blog-article-content img {
+  border-radius: 1rem;
+  margin: 2rem auto;
+  box-shadow: 0 4px 20px -2px rgba(0,0,0,0.08);
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.blog-article-content a {
+  color: #304A10;
+  text-decoration: underline;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.blog-article-content a:hover {
+  color: #557924;
+}

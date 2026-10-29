@@ -1,0 +1,355 @@
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperClass } from "swiper";
+import { Navigation, Autoplay } from "swiper/modules";
+
+import "swiper/css";
+import "swiper/css/navigation";
+
+import { ASSET_PREFIX } from "../../../config";
+
+/* ------------ Types & Data ------------ */
+
+interface SideImageItem {
+  img: string;
+  imgtitle: string;
+  heading: string;
+  alt: string;
+  link?: string;
+}
+
+const sideImages: SideImageItem[] = [
+  {
+    img: "/assets/images/icons/abhyangam-oil-massage-icon.svg",
+    heading: "Abhyangam (Oil Massage)",
+    alt: "Abhyangam Oil Massage Icon",
+    imgtitle:
+      "Full-body massage with medicated oils to improve circulation and relax muscles.",
+  },
+  {
+    img: "/assets/images/icons/swedanam-sudation-therapy-icon.svg",
+    heading: "Swedanam (Sudation Therapy)",
+    alt: "Swedanam Sudation Therapy Icon",
+    imgtitle:
+      "Herbal steam therapy to relieve stiffness and promote flexibility.",
+  },
+  {
+    img: "/assets/images/icons/janu-vasti-icon.svg",
+    heading: "Janu Vasti",
+    alt: "Janu Vasti Icon",
+    imgtitle:
+      "Warm medicated oil held around the knee to deeply nourish tissues, ease stiffness, relieve pain and encourage mobility.",
+  },
+  {
+    img: "/assets/images/icons/dhanyamla-dhara-icon.svg",
+    heading: "Dhanyamla Dhara",
+    alt: "Dhanyamla Dhara Icon",
+    imgtitle:
+      "Continuous pouring of medicated liquid over the Knee Joint to soothe Joint and muscles.",
+  },
+  {
+    img: "/assets/images/icons/podi-kizhi-and-ila-kizhi-icon.svg",
+    heading: "Podi Kizhi & Ila Kizhi",
+    alt: "Herbal poultice Icon",
+    imgtitle:
+      "Herbal poultice therapy to reduce inflammation and strengthen tissues.",
+  },
+  {
+    img: "/assets/images/icons/njavara-kizh-icon.svg",
+    heading: "Njavara Kizhi",
+    alt: "Njavara Kizh Icon",
+    imgtitle: "Rice bolus therapy to nourish and rejuvenate the affected area.",
+  },
+  {
+    img: "/assets/images/icons/cleansing-therapy-icon.svg",
+    heading: "Vasthi (Medicated Enemas)",
+    alt: "Cleansing therapy Icon",
+    imgtitle: "Cleansing therapy to remove toxins and balance doshas.",
+  },
+  {
+    img: "/assets/images/icons/muscle-and-joint-icon.svg",
+    heading: "Muscle and joint strengthening therapies",
+    alt: "Muscle and Joint icon",
+    imgtitle: "To support the knee’s structural stability",
+  },
+  {
+    img: "/assets/images/icons/local-therapies-icon.svg",
+    heading: "Improved blood circulation ",
+    alt: " local therapies Icon",
+    imgtitle: "Through local therapies that enhance tissue healing",
+  },
+  {
+    img: "/assets/images/icons/anti-inflammatory-care-icon.svg",
+    heading: "Anti-inflammatory care",
+    alt: "Anti-Inflammatory Care Icon",
+    imgtitle:
+      "Helping to halt the degenerative process and soothe joint inflammation",
+  },
+  {
+    img: "/assets/images/icons/physiotherapy-and-movement-guidance-icon.svg",
+    heading: "Physiotherapy and Movement Guidance",
+    alt: "Physiotherpay and Movement Guidance Icon",
+    imgtitle:
+      "Safe postures and activity modifications to support recovery and prevent recurrence",
+  },
+];
+
+function SideImageSwiper() {
+  const [gridConfig, setGridConfig] = useState({
+    ROWS: 3,
+    COLS: 4,
+  });
+
+  const swiperRef = useRef<SwiperClass | null>(null);
+  const prevRef = useRef<HTMLDivElement | null>(null);
+  const nextRef = useRef<HTMLDivElement | null>(null);
+
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const getGridConfig = () => {
+    if (typeof window !== "undefined") {
+      const w = window.innerWidth;
+      if (w > 750 && w < 900) {
+        // tablet-ish
+        return { ROWS: 2, COLS: 3 }; // 6 items per slide
+      } else if (w > 500 && w <= 750) {
+        // small tablet
+        return { ROWS: 2, COLS: 2 }; // 4 items per slide
+      } else if (w <= 500) {
+        // mobile
+        return { ROWS: 2, COLS: 1 }; // 2 items per slide
+      }
+    }
+    // desktop default
+    return { ROWS: 2, COLS: 4 }; // 8 items per slide
+  };
+
+  // Resize watcher
+  useEffect(() => {
+    const update = () => setGridConfig(getGridConfig());
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  const { ROWS, COLS } = gridConfig;
+  const PAGE_SIZE = ROWS * COLS; // items per slide
+  const totalSlides = Math.ceil((sideImages.length || 0) / PAGE_SIZE);
+
+  // helper for dot clicks so it works with loop
+  const goToSlide = (idx: number) => {
+    if (!swiperRef.current) return;
+
+    if (swiperRef.current.params.loop) {
+      (swiperRef.current as SwiperClass).slideToLoop(idx);
+    } else {
+      swiperRef.current.slideTo(idx);
+    }
+  };
+
+  return (
+    <>
+      <Swiper
+        modules={[Navigation, Autoplay]}
+        onSwiper={(s) => {
+          swiperRef.current = s;
+        }}
+        slidesPerView={1} // one "page" at a time
+        spaceBetween={20}
+        navigation={{
+          prevEl: prevRef.current,
+          nextEl: nextRef.current,
+        }}
+        autoplay={{
+          delay: 4000,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true,
+        }}
+        loop={totalSlides > 1}
+        onBeforeInit={(swiper) => {
+          // ensure navigation refs are wired before init
+          if (
+            swiper.params.navigation &&
+            typeof swiper.params.navigation !== "boolean"
+          ) {
+            swiper.params.navigation.prevEl = prevRef.current;
+            swiper.params.navigation.nextEl = nextRef.current;
+          }
+        }}
+        onSlideChange={(swiper) => {
+          // always use realIndex when loop is enabled
+          setActiveIndex(swiper.realIndex ?? swiper.activeIndex);
+        }}
+        className="mySwiper !pb-8">
+        {Array.from({ length: totalSlides }).map((_, slideIndex) => (
+          <SwiperSlide key={slideIndex} className="pt-[20px]">
+            <div className="grid gap-4">
+              {Array.from({ length: ROWS }).map((__, rowIndex) => {
+                const start = slideIndex * PAGE_SIZE + rowIndex * COLS;
+                const rowItems = sideImages.slice(start, start + COLS);
+
+                if (rowItems.length === 0) return null;
+
+                return (
+                  <div
+                    key={rowIndex}
+                    className="grid gap-4"
+                    style={{
+                      gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))`,
+                    }}>
+                    {rowItems.map(
+                      ({ img, imgtitle, heading, link, alt }, i) => (
+                        <div
+                          key={`${imgtitle}-${i}`}
+                          className="relative group">
+                          <div className="text-start w-full h-full m-auto flex max-[501px]:justify-center max-[501px]:items-center justify-start items-start flex-col p-[30px] max-lg:p-[20px] rounded-[20px] overflow-hidden border border-transparent hover:border-[#c3efd2] hover:bg-[#effff5]">
+                            <Image
+                              src={`${ASSET_PREFIX}${img}`}
+                              alt={alt}
+                              width={80}
+                              height={80}
+                              className="w-[80px] h-auto mx-0 sepia"
+                            />
+                            <p className="mt-2 text-[#31936d] xl:text-[18px] xl:leading-[26px] text-[16px] leading-[24px] max-md:text-[16px] max-md:leading-[22px] font-semibold max-[501px]:text-center">
+                              {heading}
+                            </p>
+                            <p className="mt-1 text-[#171717] xl:text-[16px] xl:leading-[22px] text-[16px] leading-[20px] font-normal max-[501px]:text-center">
+                              {imgtitle}
+                            </p>
+                          </div>
+
+                          {link && (
+                            <Link
+                              href={link}
+                              className="absolute inset-0"
+                              aria-label={imgtitle}
+                            />
+                          )}
+                        </div>
+                      ),
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
+      {/* Prev / Next + Pagination dots */}
+      <div className="flex justify-between items-center mt-4">
+        {/* Prev button */}
+        <div
+          ref={prevRef}
+          className="border-[#91b664] w-[55px] h-[55px] max-lg:w-[45px] max-lg:h-[45px] flex justify-center items-center cursor-pointer bg-white hover:bg-[#f4f4f4] p-3 max-lg:p-2 rounded-full shadow-lg transition duration-200 border">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="#abb4a0"
+            className="w-8 h-8">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </div>
+
+        {/* Dots (center) */}
+        {totalSlides > 0 && (
+          <div className="flex gap-[15px] z-10 w-fit max-md:flex-wrap justify-center">
+            {Array.from({ length: totalSlides }).map((_, idx) => (
+              <button
+                aria-label="Pagination"
+                key={idx}
+                onClick={() => goToSlide(idx)}
+                className={`h-[12px]  rounded-full transition-all duration-300 cursor-pointer ${activeIndex === idx
+                    ? "bg-[#d9d9d9] w-[35px] max-lg:w-[25px]"
+                    : "bg-[#9a8a80] w-[12px] max-lg:w-[10px]"
+                  }`}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Next button */}
+        <div
+          ref={nextRef}
+          className="border-[#91b664] w-[55px] h-[55px] max-lg:w-[45px] max-lg:h-[45px] flex justify-center items-center cursor-pointer bg-white hover:bg-[#f4f4f4] p-3 max-lg:p-2 rounded-full shadow-lg transition duration-200 border">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="#abb4a0"
+            className="w-8 h-8">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ------------ Page Component ------------ */
+
+export default function Treatment() {
+  return (
+    <section className="pt-[140px] max-2xl:pt-[100px] max-xl:pt-[80px] max-md:pt-[50px]">
+      <div className="[1600px]:w-[80%] w-[75%] max-2xl:w-[80%] max-lg:w-[85%] max-mlg:w-[90%] m-auto max-w-[100rem]">
+        <h3
+          className="text-[#314a10] font-[source,serief4] my-[20px] text-[50px] leading-[52px] max-2xl:text-[42px]
+             leading-[48px] max-xl:text-[36px] max-xl:leading-[40px] max-lg:text-[30px] max-lg:leading-[36px] max-mlg:text-[28px] max-mlg:leading-[32px] font-normal text-center m-auto w-fit">
+          Our Ayurvedic Knee Pain Treatment Approach
+        </h3>
+
+        <p className="mt-[20px] text-[#3f2510] text-center m-auto w-[60%] max-xl:w-[80%] max-lg:w-[90%] max-sm:w-[100%] mb-[30px]">
+          At Samwarthika, knee pain treatment is both individualized and
+          holistic. We blend time-tested Ayurvedic methods with expert physician
+          care to reduce inflammation, strengthen soft tissues and rejuvenate
+          joint function, aiming for both relief and long-term well-being.
+          <br />
+          {/* <b> Treatment components may include:</b> */}
+        </p>
+
+        <div className="w-[95%] m-auto mt-[40px] max-xl:w-[100%] max-lg:w-full max-w-[100rem]">
+          <SideImageSwiper />
+
+          {/* Old static grid kept commented if you want it later */}
+          {/* 
+            <div className="grid grid-cols-4 gap-[10px] max-lg:grid-cols-3 max-md:grid-cols-2">
+              {sideImages.map(({ img, imgtitle }, i) => (
+                <div
+                  key={i}
+                  className="text-center w-full xxl:w-[180px] xxl:h-[180px] w-[150px] h-[150px] max-xl:h-[120px] m-auto flex justify-center flex-col p-[10px] rounded-[20px] overflow-hidden border border-transparent hover:border-[#c3efd2] hover:bg-[#effff5]"
+                >
+                  <Image
+                    src={`${ASSET_PREFIX}${img}`}
+                    alt={imgtitle}
+                    width={200}
+                    height={200}
+                    className="w-[80px] h-auto mx-auto sepia"
+                  />
+                  <p className="mt-2 text-[#31936d] xl:text-[18px] xl:leading-[26px] text-[16px] leading-[24px] font-semibold">
+                    {imgtitle}
+                  </p>
+                </div>
+              ))}
+            </div>
+            */}
+        </div>
+      </div>
+    </section>
+  );
+}
