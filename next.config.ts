@@ -38,6 +38,19 @@ const nextConfig: ExtendedNextConfig = {
 
   // Set to false for secure production builds
   productionBrowserSourceMaps: false,
+
+  async rewrites() {
+    return [
+      {
+        source: '/ayurvedic-hospital',
+        destination: '/ayurvedic-hospital/index.html',
+      },
+      {
+        source: '/ayurvedic-hospital/',
+        destination: '/ayurvedic-hospital/index.html',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

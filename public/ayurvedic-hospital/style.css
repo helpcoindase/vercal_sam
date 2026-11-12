@@ -1,0 +1,230 @@
+/* ==========================================================================
+   SAMWARTHIKA AYURVEDIC HOSPITAL - LUXURY DESIGN SYSTEM & ANIMATION SUITE
+   ========================================================================== */
+
+:root {
+  --primary: #2e4916;
+  --secondary: #416322;
+  --dark: #1b2f11;
+  --gold: #c69214;
+  --gold-light: #f4d27a;
+  --terracotta: #d9651e;
+  --warm-bg: #fbf8f2;
+  --earth: #42240c;
+  --font-serif: 'Source Serif 4', 'Source Serif Pro', Georgia, serif;
+  --font-sans: 'Mulish', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-cinzel: 'Cinzel', serif;
+}
+
+body, p, span, a, button, input, select, textarea, li, label {
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4, h5, h6, .font-serif {
+  font-family: var(--font-serif);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1ebd9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #304a10;
+  border-radius: 6px;
+  border: 2px solid #f1ebd9;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d9651e;
+}
+
+/* Base Smooth Transitions */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: #2b231c;
+  background-color: var(--warm-bg);
+  overflow-x: hidden;
+}
+
+/* Hero Background Geometric & Mandala Patterns */
+.hero-pattern {
+  background-image: radial-gradient(#c69214 1px, transparent 1px), radial-gradient(#2e4916 1px, #13220e 1px);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+}
+
+/* Botanical Glow Animation */
+@keyframes floatOrb {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+  }
+}
+
+.floating-orb {
+  animation: floatOrb 12s ease-in-out infinite alternate;
+}
+
+/* Button Subtle Glow */
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-glow::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: rotate(30deg) translate(-100%, -100%);
+  transition: transform 0.8s ease-in-out;
+}
+
+.btn-glow:hover::after {
+  transform: rotate(30deg) translate(100%, 100%);
+}
+
+/* Navigation Link Underline Effect */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #c69214, #d9651e);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Concern Interactive Pills */
+.concern-pill {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  background-color: #ffffff;
+  border-color: #e5e7eb;
+  color: #1f2937;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.concern-pill:hover {
+  border-color: #658d39;
+  background-color: #fcfdfa;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(46, 73, 22, 0.08);
+}
+
+.concern-pill.active {
+  background-color: #eaf5e3 !important;
+  border-color: #244814 !important;
+  color: #0d1e08 !important;
+  box-shadow: 0 10px 24px -4px rgba(36, 72, 20, 0.25) !important;
+  transform: translateY(-3px);
+}
+
+.concern-pill.active .concern-subtitle {
+  color: #244814 !important;
+  font-weight: 600;
+}
+
+/* Treatment Filter Tabs */
+.treatment-filter-btn {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  background-color: transparent;
+  border: 1px solid transparent;
+  color: #4b5563;
+}
+
+.treatment-filter-btn:hover {
+  color: #17300c;
+  background-color: #eef6e8;
+}
+
+.treatment-filter-btn.active {
+  background: linear-gradient(135deg, #17300c, #244814) !important;
+  border-color: #17300c !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(23, 48, 12, 0.25) !important;
+}
+
+/* Treatment Card Hover Effects */
+.treatment-card {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  background-color: #ffffff;
+}
+
+.treatment-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 35px -8px rgba(23, 48, 12, 0.14), 0 8px 16px -4px rgba(0, 0, 0, 0.04);
+}
+
+/* Modal Animations */
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-modal {
+  animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+/* Swiper Doctor Slider Customization */
+.doctorsSwiper .swiper-slide {
+  height: auto;
+  display: flex;
+}
+
+/* Responsive Utilities */
+@media (max-width: 640px) {
+  .hero-pattern {
+    background-size: 24px 24px;
+  }
+}
+
+/* Mobile Bottom Luxury CTA Dock */
+.mobile-luxury-dock {
+  filter: drop-shadow(0 -8px 24px rgba(7, 30, 15, 0.2));
+  user-select: none;
+  -webkit-user-select: none;
+}
+
