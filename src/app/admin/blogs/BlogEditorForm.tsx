@@ -46,6 +46,8 @@ import {
   Table as TableIcon,
   Image as ImageIcon,
   Link as LinkIcon,
+  Unlink as UnlinkIcon,
+  ExternalLink,
   Check,
   X,
   Loader2,
@@ -57,6 +59,29 @@ import {
   Trash2,
   User,
 } from 'lucide-react';
+
+const QUICK_INTERLINKS = [
+  { title: 'Home Page', url: '/' },
+  { title: 'All Treatments', url: '/treatments/' },
+  { title: 'Ayurveda Treatment in Kerala', url: '/ayurvedic-treatment-in-kerala/' },
+  { title: 'Panchakarma Treatment', url: '/panchakarma-treatment-in-kerala/' },
+  { title: 'Lower Back Pain Treatment', url: '/ayurvedic-treatment-for-lower-back-pain-in-kerala/' },
+  { title: 'Sciatica Treatment', url: '/ayurvedic-treatment-for-sciatica-in-kerala/' },
+  { title: 'Knee Pain Treatment', url: '/ayurvedic-treatment-for-knee-pain-in-kerala/' },
+  { title: 'Cervical Spondylosis Treatment', url: '/cervical-spondylosis-treatment-kerala/' },
+  { title: 'Arthritis Treatment', url: '/arthritis-ayurvedic-treatment-kerala/' },
+  { title: 'Weight Loss Treatment', url: '/weight-loss-ayurvedic-treatment-in-kerala/' },
+  { title: 'Stress Management', url: '/ayurvedic-treatment-for-stress-in-kerala/' },
+  { title: 'Hair Loss Treatment', url: '/ayurvedic-treatment-for-hair-loss-in-kerala/' },
+  { title: 'Ayurvedic Hospital (Landing)', url: '/ayurvedic-hospital/' },
+  { title: 'Medical Tourism in Kerala', url: '/medical-tourism/' },
+  { title: 'Monsoon Ayurvedic Special', url: '/monsoon-special/' },
+  { title: 'About Us', url: '/about-us/' },
+  { title: 'Our Doctors', url: '/our-doctors/' },
+  { title: 'Accommodations & Facilities', url: '/facilities/' },
+  { title: 'Contact Us', url: '/contact-us/' },
+  { title: 'Ayurveda Blog Articles', url: '/blog/' },
+];
 
 interface BlogFormData {
   post_id?: number;
@@ -123,6 +148,13 @@ export default function BlogEditorForm({ initialData, isEdit = false }: BlogEdit
   const [contentImgUrl, setContentImgUrl] = useState('');
   const [contentImgAlt, setContentImgAlt] = useState('');
   const [uploadingContentImg, setUploadingContentImg] = useState(false);
+
+  // Link / Interlink modal
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
+  const [linkText, setLinkText] = useState('');
+  const [linkNewTab, setLinkNewTab] = useState(false);
+  const [linkFilter, setLinkFilter] = useState('');
 
   // FAQ Schema Builder
   const [faqs, setFaqs] = useState<{ question: string; answer: string }[]>([]);
@@ -486,6 +518,87 @@ export default function BlogEditorForm({ initialData, isEdit = false }: BlogEdit
     alert('Please choose an image file or enter an Image URL');
   };
 
+  // Link / Interlink Handlers
+  const handleOpenLinkModal = () => {
+    let selected = '';
+    if (editorMode === 'visual') {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.anchorNode)) {
+        savedSelectionRef.current = sel.getRangeAt(0).cloneRange();
+        selected = sel.toString().trim();
+      } else {
+        savedSelectionRef.current = null;
+      }
+    }
+    setLinkText(selected);
+    setLinkUrl('');
+    setLinkNewTab(false);
+    setLinkFilter('');
+    setShowLinkModal(true);
+  };
+
+  const handleCloseLinkModal = () => {
+    setShowLinkModal(false);
+    setLinkUrl('');
+    setLinkText('');
+    setLinkFilter('');
+  };
+
+  const handleSelectQuickLink = (url: string, title: string) => {
+    setLinkUrl(url);
+    if (!linkText.trim()) {
+      setLinkText(title);
+    }
+  };
+
+  const handleInsertLink = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!linkUrl.trim()) {
+      alert('Please enter or select a URL');
+      return;
+    }
+
+    const url = linkUrl.trim();
+    const text = linkText.trim() || url;
+    const targetAttr = linkNewTab ? ' target="_blank" rel="noopener noreferrer"' : '';
+    const anchorHtml = `<a href="${url}"${targetAttr}>${text}</a>`;
+
+    if (editorMode === 'visual' && editorRef.current) {
+      editorRef.current.focus();
+      let inserted = false;
+
+      if (savedSelectionRef.current) {
+        try {
+          const sel = window.getSelection();
+          if (sel) {
+            sel.removeAllRanges();
+            sel.addRange(savedSelectionRef.current);
+            inserted = document.execCommand('insertHTML', false, anchorHtml);
+          }
+        } catch {
+          inserted = false;
+        }
+      }
+
+      if (!inserted) {
+        const ok = document.execCommand('insertHTML', false, anchorHtml);
+        if (!ok) {
+          editorRef.current.innerHTML += anchorHtml;
+        }
+      }
+
+      setContent(editorRef.current.innerHTML);
+    } else {
+      const updated = (content ? content + ' ' : '') + anchorHtml;
+      setContent(updated);
+      if (editorRef.current) {
+        editorRef.current.innerHTML = updated;
+      }
+    }
+
+    handleCloseLinkModal();
+  };
+
   // FAQ Schema manipulation
   const addFaqItem = () => {
     setFaqs((prev) => [...prev, { question: '', answer: '' }]);
@@ -719,6 +832,14 @@ export default function BlogEditorForm({ initialData, isEdit = false }: BlogEdit
                   >
                     <ImageIcon className="w-3.5 h-3.5" /> Add Image
                   </button>
+                  <button
+                    type="button"
+                    onClick={handleOpenLinkModal}
+                    className="px-2.5 py-1 text-xs rounded-lg border border-blue-200 bg-blue-50/50 hover:bg-blue-100/60 text-blue-700 flex items-center gap-1 cursor-pointer font-medium"
+                    title="Insert Link / Interlink (Ctrl+K)"
+                  >
+                    <LinkIcon className="w-3.5 h-3.5 text-blue-600" /> Link
+                  </button>
                   <div className="w-[1px] h-4 bg-gray-200 mx-0.5" />
                   <div className="flex bg-gray-100 p-0.5 rounded-xl border border-gray-200 text-xs">
                     <button
@@ -785,6 +906,15 @@ export default function BlogEditorForm({ initialData, isEdit = false }: BlogEdit
                   >
                     U
                   </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => executeCommand('strikeThrough')}
+                    className="p-1.5 hover:bg-white rounded line-through px-2 cursor-pointer transition"
+                    title="Strikethrough"
+                  >
+                    S
+                  </button>
                   <div className="w-[1px] h-4 bg-gray-300 mx-1" />
                   <button
                     type="button"
@@ -816,6 +946,7 @@ export default function BlogEditorForm({ initialData, isEdit = false }: BlogEdit
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => executeCommand('insertUnorderedList')}
                     className="p-1.5 hover:bg-white rounded px-2 cursor-pointer transition"
+                    title="Bullet List"
                   >
                     • List
                   </button>
@@ -824,6 +955,7 @@ export default function BlogEditorForm({ initialData, isEdit = false }: BlogEdit
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => executeCommand('insertOrderedList')}
                     className="p-1.5 hover:bg-white rounded px-2 cursor-pointer transition"
+                    title="Numbered List"
                   >
                     1. List
                   </button>
@@ -832,8 +964,48 @@ export default function BlogEditorForm({ initialData, isEdit = false }: BlogEdit
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => executeCommand('formatBlock', '<blockquote>')}
                     className="p-1.5 hover:bg-white rounded px-2 cursor-pointer transition"
+                    title="Quote"
                   >
                     Quote
+                  </button>
+                  <div className="w-[1px] h-4 bg-gray-300 mx-1" />
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={handleOpenLinkModal}
+                    className="p-1.5 hover:bg-blue-50 text-blue-600 rounded px-2 cursor-pointer transition flex items-center gap-1 font-medium"
+                    title="Insert Link / Interlink (Ctrl+K)"
+                  >
+                    <LinkIcon className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Link</span>
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => executeCommand('unlink')}
+                    className="p-1.5 hover:bg-red-50 text-gray-500 hover:text-red-600 rounded px-1.5 cursor-pointer transition flex items-center gap-1"
+                    title="Remove Link (Unlink)"
+                  >
+                    <UnlinkIcon className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={handleOpenImageModal}
+                    className="p-1.5 hover:bg-white rounded px-2 cursor-pointer transition flex items-center gap-1 text-gray-700"
+                    title="Insert Image"
+                  >
+                    <ImageIcon className="w-3.5 h-3.5" />
+                  </button>
+                  <div className="w-[1px] h-4 bg-gray-300 mx-1" />
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => executeCommand('removeFormat')}
+                    className="p-1.5 hover:bg-white rounded px-2 cursor-pointer transition text-gray-600 font-serif"
+                    title="Clear Formatting"
+                  >
+                    <span className="line-through">T</span><span className="text-[10px]">x</span>
                   </button>
                 </div>
               )}
@@ -846,6 +1018,12 @@ export default function BlogEditorForm({ initialData, isEdit = false }: BlogEdit
                 contentEditable
                 suppressContentEditableWarning
                 onInput={(e) => setContent(e.currentTarget.innerHTML)}
+                onKeyDown={(e) => {
+                  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    handleOpenLinkModal();
+                  }
+                }}
                 onBlur={(e) => {
                   const cleaned = cleanHtml(e.currentTarget.innerHTML);
                   setContent(cleaned);
@@ -1449,6 +1627,132 @@ export default function BlogEditorForm({ initialData, isEdit = false }: BlogEdit
                 ) : (
                   'Insert Image'
                 )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Insert Link / Interlink Modal */}
+      {showLinkModal && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-lg w-full shadow-2xl border border-gray-100 space-y-4 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+              <h3 className="font-serif text-lg font-bold text-gray-900 flex items-center gap-2">
+                <LinkIcon className="w-5 h-5 text-blue-600" /> Insert Link / Interlink
+              </h3>
+              <button
+                type="button"
+                onClick={handleCloseLinkModal}
+                className="p-1 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-4 overflow-y-auto flex-1 pr-1">
+              {/* Display Text */}
+              <div className="space-y-1">
+                <label className="block text-xs font-semibold text-gray-700">
+                  Link Text / Anchor Text
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Ayurvedic Treatment in Kerala"
+                  value={linkText}
+                  onChange={(e) => setLinkText(e.target.value)}
+                  className="w-full text-xs px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-[var(--primary)]"
+                />
+                <p className="text-[11px] text-gray-400">The visible clickable text in the article.</p>
+              </div>
+
+              {/* Destination URL */}
+              <div className="space-y-1">
+                <label className="block text-xs font-semibold text-gray-700">
+                  Target URL / Path
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://... or /panchakarma-treatment-in-kerala/"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  className="w-full text-xs px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-[var(--primary)] font-mono"
+                />
+              </div>
+
+              {/* Open in new tab toggle */}
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="linkNewTab"
+                  checked={linkNewTab}
+                  onChange={(e) => setLinkNewTab(e.target.checked)}
+                  className="rounded text-[var(--primary)] focus:ring-[var(--primary)] w-4 h-4 cursor-pointer"
+                />
+                <label htmlFor="linkNewTab" className="text-xs text-gray-600 cursor-pointer select-none">
+                  Open link in a new tab (recommended for external links)
+                </label>
+              </div>
+
+              {/* Quick Interlinks (Hospital & Treatment Pages for SEO) */}
+              <div className="pt-2 border-t border-gray-100 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5 text-[var(--primary)]" />
+                    Quick Interlink (Hospital & Treatment Pages)
+                  </label>
+                  <span className="text-[10px] text-gray-400">1-click select</span>
+                </div>
+
+                <input
+                  type="text"
+                  placeholder="Filter pages... (e.g. knee, panchakarma, hospital)"
+                  value={linkFilter}
+                  onChange={(e) => setLinkFilter(e.target.value)}
+                  className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-gray-200 focus:outline-none focus:border-[var(--primary)] bg-gray-50/50"
+                />
+
+                <div className="max-h-48 overflow-y-auto space-y-1 p-1 bg-gray-50 rounded-xl border border-gray-200">
+                  {QUICK_INTERLINKS.filter(
+                    (item) =>
+                      !linkFilter.trim() ||
+                      item.title.toLowerCase().includes(linkFilter.toLowerCase()) ||
+                      item.url.toLowerCase().includes(linkFilter.toLowerCase())
+                  ).map((item, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleSelectQuickLink(item.url, item.title)}
+                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition cursor-pointer ${
+                        linkUrl === item.url
+                          ? 'bg-blue-100 text-blue-900 font-semibold'
+                          : 'hover:bg-white text-gray-700'
+                      }`}
+                    >
+                      <span className="truncate pr-2">{item.title}</span>
+                      <span className="text-[10px] text-gray-400 font-mono flex-shrink-0">{item.url}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex gap-2 pt-2 border-t border-gray-100">
+              <button
+                type="button"
+                onClick={handleCloseLinkModal}
+                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={!linkUrl.trim()}
+                onClick={handleInsertLink}
+                className="flex-1 py-2.5 rounded-xl bg-[var(--primary)] hover:bg-[#23380b] text-white text-xs font-semibold uppercase tracking-wider disabled:opacity-50 transition shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <Check className="w-3.5 h-3.5" /> Insert Link
               </button>
             </div>
           </div>

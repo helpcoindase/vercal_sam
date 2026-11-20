@@ -194,6 +194,15 @@ div.skiptranslate {
   padding: 0.5rem;
   color: #1f2937;
 }
+.blog-editor-canvas a {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 500;
+}
+.blog-editor-canvas a:hover {
+  color: #1d4ed8;
+}
 
 /* ─── Frontend Blog Article Content Styling ─── */
 .blog-article-content {
